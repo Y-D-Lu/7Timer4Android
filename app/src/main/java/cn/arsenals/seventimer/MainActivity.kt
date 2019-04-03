@@ -3,6 +3,8 @@ package cn.arsenals.seventimer
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import cn.arsenals.seventimer.utils.PermissionUtil
 
 import com.baidu.mapapi.CoordType
 import com.baidu.mapapi.SDKInitializer
@@ -23,6 +25,14 @@ class MainActivity : AppCompatActivity() {
 
         main_btn1.setOnClickListener {
             startActivity(Intent(this, MapActivity::class.java))
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val lackedPermissions = PermissionUtil.checkPermission(this, PermissionUtil.PERMISSIONS)
+        if (lackedPermissions.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, lackedPermissions, 0)
         }
     }
 }
