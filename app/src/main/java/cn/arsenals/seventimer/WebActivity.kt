@@ -5,11 +5,11 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.view.View
 import android.webkit.WebViewClient
 import android.widget.Toast
 import cn.arsenals.seventimer.utils.LogUtil
 import kotlinx.android.synthetic.main.activity_web.*
+
 
 class WebActivity : AppCompatActivity() {
 

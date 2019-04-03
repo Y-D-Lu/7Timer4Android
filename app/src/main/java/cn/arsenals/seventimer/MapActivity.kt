@@ -4,7 +4,9 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.app.ActivityCompat
 import cn.arsenals.seventimer.utils.LogUtil
+import cn.arsenals.seventimer.utils.PermissionUtil
 import com.baidu.mapapi.map.BaiduMap
 import kotlinx.android.synthetic.main.activity_map.*
 import com.baidu.mapapi.map.MapPoi
@@ -14,6 +16,8 @@ import com.baidu.location.BDLocation
 import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.LocationClient
 import com.baidu.location.LocationClientOption
+import com.baidu.mapapi.CoordType
+import com.baidu.mapapi.SDKInitializer
 
 
 class MapActivity : AppCompatActivity() {
@@ -22,10 +26,14 @@ class MapActivity : AppCompatActivity() {
         private const val TAG = "MapActivity"
     }
 
-    lateinit var mLocationClient : LocationClient
+    private lateinit var mLocationClient : LocationClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        SDKInitializer.initialize(applicationContext);
+        SDKInitializer.setCoordType(CoordType.BD09LL);
+
         setContentView(R.layout.activity_map)
 
         bmapView.map.setOnMapClickListener(object : BaiduMap.OnMapClickListener {
@@ -64,6 +72,12 @@ class MapActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        val lackedPermissions = PermissionUtil.checkPermission(this, PermissionUtil.PERMISSIONS)
+        if (lackedPermissions.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, lackedPermissions, 0)
+        }
+
         bmapView.onResume()
     }
 
