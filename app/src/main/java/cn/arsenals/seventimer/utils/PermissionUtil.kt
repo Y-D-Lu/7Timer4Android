@@ -3,10 +3,6 @@ package cn.arsenals.seventimer.utils
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.Manifest.permission
-import android.Manifest.permission.READ_CONTACTS
-import android.app.Activity
-import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import java.util.*
 
