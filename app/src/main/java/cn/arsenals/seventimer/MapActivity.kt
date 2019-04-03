@@ -9,12 +9,20 @@ import com.baidu.mapapi.map.BaiduMap
 import kotlinx.android.synthetic.main.activity_map.*
 import com.baidu.mapapi.map.MapPoi
 import com.baidu.mapapi.model.LatLng
+import com.baidu.mapapi.map.MyLocationData
+import com.baidu.location.BDLocation
+import com.baidu.location.BDAbstractLocationListener
+import com.baidu.location.LocationClient
+import com.baidu.location.LocationClientOption
+
 
 class MapActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "MapActivity"
     }
+
+    lateinit var mLocationClient : LocationClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +48,18 @@ class MapActivity : AppCompatActivity() {
                 }
             }
         })
+
+        bmapView.map.isMyLocationEnabled = true;
+
+        mLocationClient = LocationClient(this)
+        val option = LocationClientOption()
+        option.isOpenGps = true
+        option.setCoorType("bd09ll")
+        option.setScanSpan(1000)
+        mLocationClient.locOption = option
+        val myLocationListener = MyLocationListener()
+        mLocationClient.registerLocationListener(myLocationListener)
+        mLocationClient.start()
     }
 
     override fun onResume() {
@@ -54,7 +74,9 @@ class MapActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        bmapView.onDestroy()
+        mLocationClient.stop();
+        bmapView.map.isMyLocationEnabled = false;
+        bmapView.onDestroy();
     }
 
     fun showSnackBar(coord: LatLng) {
@@ -62,5 +84,18 @@ class MapActivity : AppCompatActivity() {
             val url = "http://www.7timer.info/index.php?product=civil&lon=" + coord.longitude + "&lat=" + coord.latitude + "&lang=zh-CN&tzshift=0"
             startActivity(Intent(this, WebActivity::class.java).putExtra("url", url))
         }.show()
+    }
+
+    inner class MyLocationListener : BDAbstractLocationListener() {
+        override fun onReceiveLocation(location: BDLocation?) {
+            if (location == null || bmapView == null) {
+                return
+            }
+            val locData = MyLocationData.Builder()
+                    .accuracy(location.radius)
+                    .direction(location.direction).latitude(location.latitude)
+                    .longitude(location.longitude).build()
+            bmapView.map.setMyLocationData(locData)
+        }
     }
 }
